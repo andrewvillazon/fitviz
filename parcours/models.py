@@ -12,8 +12,8 @@ class Activity(Base):
     id = Column(Integer, primary_key=True)
     file_name = Column(String(20))
 
-    records = relationship("Record", back_populates="record")
-    laps = relationship("Lap", back_populates="lap")
+    records = relationship("Record")
+    laps = relationship("Lap")
 
 
 class Record(Base):
