@@ -3,7 +3,7 @@
 
 
 class FitMsg:
-    '''Container for a fit message. Attributes will be dynamically assigned.'''
+    '''Container for a fit message. Attributes dynamically assigned.'''
 
     def __init__(self, msg_name):
         self.msg_name = msg_name
