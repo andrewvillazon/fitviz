@@ -4,22 +4,23 @@
 from . import models
 
 
-class FitMessageData:
-    '''A wrapper around a fit message field data.
+class MessageWrapper:
+    '''A wrapper around a fit message make it easier to work with.
     
-    Takes a fit message and sets the message's field data to the objects
-    attributes. Makes the message easier to use by providing direct
-    access to the field names and data.
+    Provides access into the field data through attribute access. When
+    an attribute is accessed the wrapper will look inside the message's 
+    field data and return its value if it exists and an AttributeError
+    if it not.
     '''
 
     def __init__(self, message):
+        self.message = message
         self.message_name = message.name
-        self.__dict__.update(self.extract_field_data(message.fields))
 
-    def extract_field_data(self,fields):
-        field_data = {}
+    def __getattr__(self, attr):
+        field_data = next(filter(lambda f: f.name==attr,self.message.fields), None)
         
-        for field in fields:
-            field_data[field.name]=field.value
-
-        return field_data
+        if not field_data:
+            raise AttributeError("'{}' message has no field named '{}'".format(self.message.name, attr))
+        
+        return field_data.value
