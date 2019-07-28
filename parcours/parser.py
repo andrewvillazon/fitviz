@@ -1,7 +1,7 @@
 '''Module for parsing fit activity messages to model classes
 '''
 
-from . import models
+from .models import Lap
 
 
 class MessageWrapper:
@@ -24,3 +24,23 @@ class MessageWrapper:
             raise AttributeError("'{}' message has no field named '{}'".format(self.message.name, attr))
         
         return field_data.value
+
+
+class LapMapper:
+
+    def __init__(self, source_msg):
+        self.source_msg = source_msg
+        self.dest_model = Lap()
+
+        self.apply_mapping()
+
+    def apply_mapping(self):
+        mapping = {
+            'start_dtm': self.source_msg.start_time,
+            'end_dtm': self.source_msg.timestamp
+        }
+
+        self.dest_model.__dict__.update(mapping)
+
+    def mapped_model(self):
+        return self.dest_model
