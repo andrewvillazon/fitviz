@@ -28,8 +28,11 @@ class Record(Base):
     cadence = Column(Integer,nullable=True)
     speed = Column(Integer,nullable=True)
     distance = Column(Float,nullable=True)
+    altitude = Column(Integer,nullable=True)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    latitude_mercator = Column(Float, nullable=True)
+    longitude_mercator = Column(Float, nullable=True)
 
 
 class Lap(Base):
