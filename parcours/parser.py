@@ -94,3 +94,33 @@ class RecordMapper:
     def model(self):
         self.mapped_model = self.prepare_model()
         return self.mapped_model
+
+
+def activity():
+    activity = Activity()
+    activity.laps = []
+    activity.records = []
+
+    return activity
+
+
+def activity_from_file(file_path):
+    new_activity = activity()
+
+    fit_file = FitFile(file_path)
+
+    for msg_type in REQUIRED_MSG_TYPES:
+        messages = list(fit_file.get_messages(msg_type))
+
+        for message in messages:
+            better_msg = MessageWrapper(message)
+
+            if better_msg.message_name == 'lap':
+                lap = LapMapper(better_msg).mapped_model()
+                new_activity.laps.append(lap)
+            
+            if better_msg.message_name == 'record':
+                record_mapper = RecordMapper(better_msg)
+                new_activity.records.append(record_mapper.mapped_model)
+
+    return new_activity
