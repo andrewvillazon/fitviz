@@ -2,11 +2,13 @@
 '''
 
 from pyproj import Proj, transform
+from fitparse import FitFile
 
-from .models import Lap, Record
+from .models import Lap, Record, Activity
 
 
 DEGREES_MULTIPLIER = 180 / 2 ** 31
+REQUIRED_MSG_TYPES = ['lap','record']
 
 
 class MessageWrapper:
@@ -55,26 +57,28 @@ class RecordMapper:
 
     def __init__(self, source_msg):
         self.source_msg = source_msg
-        self.dest_model = Record()
+        self.mapped_model = None
+    
+    def prepare_model(self):
+        record = Record()
+        
+        record.recorded_dtm = self.source_msg.timestamp
+        record.heart_rate = getattr(self.source_msg, 'heart_rate', None)
+        record.power = getattr(self.source_msg, 'power', None)
+        record.cadence = getattr(self.source_msg, 'cadence', None)
+        record.speed = getattr(self.source_msg, 'speed', None)
+        record.distance = getattr(self.source_msg, 'distance', None)
+        record.altitude = getattr(self.source_msg, 'altitude', None)
+        record.latitude = getattr(self.source_msg, 'positition_lat', None)
+        record.longitude = getattr(self.source_msg, 'position_long', None)
 
-        self.apply_mapping()
+        if record.latitude and record.longitude:
+            record.longitude_mercator, record.latitude_mercator = self.latlong_to_mercator(record.longitude,record.latitude)
+        else:
+            record.longitude_mercator, record.latitude_mercator = None, None
 
-    def apply_mapping(self):
-        mapping = {
-            "recorded_dtm": self.source_msg.timestamp,
-            "heart_rate":self.source_msg.heart_rate,
-            "power": self.source_msg.power,
-            "cadence": self.source_msg.cadence,
-            "speed": self.source_msg.speed,
-            "distance": self.source_msg.distance,
-            "altitude": self.source_msg.altitude,
-            "latitude": self.semicircles_to_degrees(self.source_msg.position_lat),
-            "longitude": self.semicircles_to_degrees(self.source_msg.position_long)
-        }
+        return record
 
-        mapping["longitude_mercator"], mapping["latitude_mercator"] = self.latlong_to_mercator(mapping["longitude"],mapping["latitude"])
-
-        self.dest_model.__dict__.update(mapping)
 
     def semicircles_to_degrees(self,semicircle):
         degrees = semicircle * (DEGREES_MULTIPLIER)
@@ -86,5 +90,7 @@ class RecordMapper:
 
         return transform(latlong,mercator,long,lat)
 
-    def mapped_model(self):
-        return self.dest_model
+    @property
+    def model(self):
+        self.mapped_model = self.prepare_model()
+        return self.mapped_model
