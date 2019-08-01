@@ -34,6 +34,9 @@ class Record(Base):
     latitude_mercator = Column(Float, nullable=True)
     longitude_mercator = Column(Float, nullable=True)
 
+    def __repr__(self):
+        return '<Record({!r})>'.format(vars(self))
+
 
 class Lap(Base):
 	__tablename__ = 'lap'
