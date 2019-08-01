@@ -69,8 +69,9 @@ class RecordMapper:
         record.speed = getattr(self.source_msg, 'speed', None)
         record.distance = getattr(self.source_msg, 'distance', None)
         record.altitude = getattr(self.source_msg, 'altitude', None)
-        record.latitude = getattr(self.source_msg, 'positition_lat', None)
-        record.longitude = getattr(self.source_msg, 'position_long', None)
+
+        record.latitude = self.semicircles_to_degrees(self.source_msg.position_lat) if hasattr(self.source_msg,'position_lat') else None
+        record.longitude = self.semicircles_to_degrees(self.source_msg.position_long) if hasattr(self.source_msg,'position_long') else None
 
         if record.latitude and record.longitude:
             record.longitude_mercator, record.latitude_mercator = self.latlong_to_mercator(record.longitude,record.latitude)
@@ -121,6 +122,6 @@ def activity_from_file(file_path):
             
             if better_msg.message_name == 'record':
                 record_mapper = RecordMapper(better_msg)
-                new_activity.records.append(record_mapper.mapped_model)
+                new_activity.records.append(record_mapper.model)
 
     return new_activity
