@@ -98,6 +98,34 @@ class RecordMapper:
         return self.mapped_model
 
 
+class Translation(namedtuple('Translation',['source_field','dest_attr','transformation'])):
+    """Represents a single translation from a field on a fit message to
+    an attribute on destination model object. An optional transformation 
+    can be supplied as a function definition. This will be applied at 
+    translation time.
+    """
+    __slots__ = ()
+
+    def __new__(cls, source_field,dest_attr,transformation=None):
+        return super(Translation, cls).__new__(cls,dest_attr,source_key,transformation)
+
+
+class LapTranslation:
+    translates = Lap
+
+    translations = (
+        Translation('start_time','start_dtm'),
+        Translation('timestamp','end_dtm')
+    )
+
+class Translator:
+    """Responsible for translating a fit message to a model object
+    accoding to the provided translation.
+    """
+    def translate(self, message, translation):
+        pass
+
+
 def activity():
     activity = Activity()
     activity.laps = []
