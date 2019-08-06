@@ -11,7 +11,7 @@ DEGREES_MULTIPLIER = 180 / 2 ** 31
 REQUIRED_MSG_TYPES = ['lap','record']
 
 
-class MessageWrapper:
+class MessageDTO:
     '''A wrapper around a fit message make it easier to work with.
     
     Provides access into the field data through attribute access. When
@@ -72,7 +72,8 @@ class RecordMapper:
 
         record.latitude = self.semicircles_to_degrees(self.source_msg.position_lat) if hasattr(self.source_msg,'position_lat') else None
         record.longitude = self.semicircles_to_degrees(self.source_msg.position_long) if hasattr(self.source_msg,'position_long') else None
-
+        # SEE HERE:
+        # http://pyproj4.github.io/pyproj/stable/optimize_transformations.html#optimize-transformations
         if record.latitude and record.longitude:
             record.longitude_mercator, record.latitude_mercator = self.latlong_to_mercator(record.longitude,record.latitude)
         else:
@@ -114,7 +115,7 @@ def activity_from_file(file_path):
         messages = list(fit_file.get_messages(msg_type))
 
         for message in messages:
-            better_msg = MessageWrapper(message)
+            better_msg = MessageDTO(message)
 
             if better_msg.message_name == 'lap':
                 lap = LapMapper(better_msg).mapped_model()
