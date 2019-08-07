@@ -107,11 +107,13 @@ class Translation(namedtuple('Translation',['source_field','dest_attr','transfor
     __slots__ = ()
 
     def __new__(cls, source_field,dest_attr,transformation=None):
-        return super(Translation, cls).__new__(cls,dest_attr,source_key,transformation)
+        return super(Translation, cls).__new__(cls,dest_attr,source_field,transformation)
 
 
 class LapTranslation:
-    translates = Lap
+    # What about a name for what it translates from? So they can be checked at translation time?
+    # E.g. what if it can't be translated? Should it throw an exception?
+    dest_model = Lap
 
     translations = (
         Translation('start_time','start_dtm'),
@@ -123,8 +125,13 @@ class Translator:
     accoding to the provided translation.
     """
     def translate(self, message, translation):
-        pass
+        model = translation.dest_model()
 
+        for tr in translation.translations:
+            # Entity translation code
+            pass
+        
+        return model
 
 def activity():
     activity = Activity()
