@@ -1,4 +1,4 @@
-"""Module for providing functionality to parse a fit file into an
+"""Module providing functionality to parse a fit file into an
 activity domain object.
 
 Main interface is activity_from_file()
@@ -6,20 +6,10 @@ Main interface is activity_from_file()
 import pyproj
 from fitparse import FitFile
 
-import models
+from .models import Lap, Record, Activity
 
 
 DEGREES_MULTIPLIER = 180 / 2 ** 31
-
-
-def _semicircle_to_degree(semicircle):
-    degrees = semicircle * (DEGREES_MULTIPLIER)
-    return round(degrees, 6)
-
-
-def _semicircle_to_mercator(semicircle):
-    # TODO: How to only transform one coordinate?
-    return None
 
 
 class MessageDTO:
@@ -40,11 +30,22 @@ class MessageDTO:
         return field_data.value
 
 
+def _semicircle_to_degree(semicircle):
+    degrees = semicircle * (DEGREES_MULTIPLIER)
+    return round(degrees, 6)
+
+
+def _semicircle_to_mercator(semicircle):
+    # FIXME: Conversion to lat long requires x y pair
+    return None
+
+
+# TODO: Validate the mapping is consistent with model classes before use
 mapping_config = {
     "message_to_model_mappings": [
         {
             "message_name": "lap",
-            "model_class": models.Lap,
+            "model_class": Lap,
             "attribute_mappings": [
                 {
                     "field": "start_time",
@@ -58,7 +59,7 @@ mapping_config = {
         },
         {
             "message_name": "record",
-            "model_class": models.Record,
+            "model_class": Record,
             "attribute_mappings": [
                 {
                     "field": "timestamp",
@@ -107,7 +108,7 @@ mapping_config = {
                     "field": "position_long",
                     "attribute": "longitude_mercator",
                     "transformation": _semicircle_to_mercator
-                },
+                }
             ]
         }
     ]
@@ -125,8 +126,7 @@ def extract_data(fit_file):
             model_class = mapping["model_class"]()
 
             for attribute_map in mapping["attribute_mappings"]:
-                field_value = getattr(
-                    message_dto, attribute_map["field"], None)
+                field_value = getattr(message_dto, attribute_map["field"], None)
 
                 if "transformation" in attribute_map and field_value:
                     transformation_function = attribute_map["transformation"]
@@ -139,20 +139,17 @@ def extract_data(fit_file):
     return data
 
 
+def activity(file_path, data):
+    activity = Activity()
+    activity.file_name = file_path
+    activity.laps = list(filter(lambda x: isinstance(x, Lap), data))
+    activity.records = list(filter(lambda x: isinstance(x, Record), data))
+
+    return activity
+
+
 def activity_from_file(file_path):
     fit_file = FitFile(file_path)
     data = extract_data(fit_file)
 
-    activity = models.Activity()
-    activity.file_name = file_path
-    activity.laps = list(filter(lambda x: isinstance(x, models.Lap), data))
-    activity.records = list(filter(lambda x: isinstance(x, models.Record), data))
-
-    return activity
-
-if __name__ == "__main__":
-    file = "../../../Projects/diy-trainingpeaks/activities/2018-10-31-17-29-46.fit"
-
-    activity = activity_from_file(file)
-
-    print(activity.laps[20])
+    return activity(file_path, data)
