@@ -1,19 +1,15 @@
-import configparser
+"""
+parcours.config
+~~~~~~~~~~~~~~~
+
+This module contains the configuration values for parcours. Values are
+read from a configuration file.
+"""
+
 import os
+from configobj import ConfigObj
 
-CONFIG_PATH = os.getenv('PARCOURS_CONF')
 
+CONFIG_PATH = os.getenv("PARCOURS_CONF")
 
-def _initialise():
-    cp = configparser.SafeConfigParser()
-    cp.read(CONFIG_PATH)
-    
-    return cp
-
-# Could this be used instead to simplify config?
-# http://www.voidspace.org.uk/python/articles/configobj.shtml#the-advantages-of-configobj
-
-config = _initialise()
-
-if __name__ == "__main__":
-    print(config["application"]["binders"])
+config = ConfigObj(CONFIG_PATH)
