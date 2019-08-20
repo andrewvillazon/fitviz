@@ -46,6 +46,11 @@ def saved_activities():
     return file_names
 
 
+def unsaved_activities():
+    """Determines the activities in the activity dir not yet saved."""
+    return list(set(activities_in_dir()) - set(saved_activities()))
+
+
 def load_db():
     """
     Sets up and populates the parcours database. Will create db and
