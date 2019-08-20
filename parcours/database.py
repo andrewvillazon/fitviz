@@ -12,10 +12,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from .config import config
-from .models import Base
+from .models import Base, Activity
 
 
 engine = create_engine("sqlite:///{}".format(config["db_uri"]), echo=True)
+Session = sessionmaker(bind=engine)
 
 
 def activities_in_dir():
@@ -27,6 +28,20 @@ def activities_in_dir():
     for file_name in os.listdir(config["activity_dir"]):
         if file_name.endswith(".fit"):
             file_names.append(file_name)
+
+    return file_names
+
+
+def saved_activities():
+    """
+    Returns a list of the activity files currently stored in the
+    parcours database.
+    """
+    file_names = []
+    session = Session()
+
+    for activity in session.query(Activity.file_name).all():
+        file_names.append(activity.file_name)
 
     return file_names
 
