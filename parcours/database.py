@@ -7,11 +7,13 @@ parcours database.
 """
 
 import os
+import os.path
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from .config import config
+from .fileparser import activity_from_file
 from .models import Base, Activity
 
 
@@ -51,6 +53,26 @@ def unsaved_activities():
     return list(set(activities_in_dir()) - set(saved_activities()))
 
 
+def load_activity_files():
+    """
+    Loads to the parcours db any unsaved activities found in the activities
+    directory.
+    """
+    unsaved_files = unsaved_activities()
+
+    if not unsaved_files:
+        return
+
+    session = Session()
+
+    for f in unsaved_files:
+        activity = activity_from_file(os.path.join(config["activity_dir"], f))
+        activity.file_name = f
+
+        session.add(activity)
+        session.commit()
+
+
 def load_db():
     """
     Sets up and populates the parcours database. Will create db and
@@ -59,3 +81,4 @@ def load_db():
     """
 
     Base.metadata.create_all(engine)
+    load_activity_files()
