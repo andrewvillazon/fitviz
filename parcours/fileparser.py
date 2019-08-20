@@ -63,7 +63,7 @@ mapping_config = {
             "attribute_mappings": [
                 {
                     "field": "timestamp",
-                    "attribute": "recorded_at"
+                    "attribute": "record_dtm"
                 },
                 {
                     "field": "heart_rate",

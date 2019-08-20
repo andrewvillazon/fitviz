@@ -22,7 +22,7 @@ class Record(Base):
     id = Column(Integer, primary_key=True)
     activity_id = Column(Integer, ForeignKey("activity.id"))
 
-    recorded_dtm = Column(DateTime)
+    record_dtm = Column(DateTime)
     heart_rate = Column(Integer)
     power = Column(Integer)
     cadence = Column(Integer,nullable=True)
