@@ -15,6 +15,9 @@ from .config import config
 from .models import Base
 
 
+engine = create_engine("sqlite:///{}".format(config["db_uri"]), echo=True)
+
+
 def activities_in_dir():
     """
     Returns a list of the activity files in the activity directory.
@@ -35,5 +38,4 @@ def load_db():
     directory and loads them to the db.
     """
 
-    engine = create_engine("sqlite:///{}".format(config["db_uri"]), echo=True)
     Base.metadata.create_all(engine)
