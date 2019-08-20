@@ -1,6 +1,6 @@
 """
 parcours.database
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 This module contains functionality for setting up and loading the
 parcours database.
