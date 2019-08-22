@@ -17,7 +17,7 @@ from .fileparser import activity_from_file
 from .models import Base, Activity
 
 
-engine = create_engine("sqlite:///{}".format(config["db_uri"]), echo=True)
+engine = create_engine(f"sqlite:///{config['db_uri']}", echo=True)
 Session = sessionmaker(bind=engine)
 
 
