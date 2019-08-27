@@ -12,22 +12,10 @@ from .models import Lap, Record, Activity
 DEGREES_MULTIPLIER = 180 / 2 ** 31
 
 
-class MessageDTO:
-    '''Wraps fit message to provide attribute access to message field data.
-    '''
+def get_field_value(field_name, message):
+    field_data = next(filter(lambda f: f.name == field_name, message.fields), None)
 
-    def __init__(self, message):
-        self.message = message
-
-    def __getattr__(self, attr):
-        field_data = next(filter(lambda f: f.name == attr,
-                                 self.message.fields), None)
-
-        if not field_data:
-            raise AttributeError(
-                "'{}' message has no field named '{}'".format(self.message.name, attr))
-
-        return field_data.value
+    return field_data.value if field_data else None
 
 
 def _semicircle_to_degree(semicircle):
@@ -122,11 +110,10 @@ def extract_data(fit_file):
         messages = list(fit_file.get_messages(mapping["message_name"]))
 
         for message in messages:
-            message_dto = MessageDTO(message)
             model_class = mapping["model_class"]()
 
             for attribute_map in mapping["attribute_mappings"]:
-                field_value = getattr(message_dto, attribute_map["field"], None)
+                field_value = get_field_value(attribute_map["field"], message)
 
                 if "transformation" in attribute_map and field_value:
                     transformation_function = attribute_map["transformation"]
