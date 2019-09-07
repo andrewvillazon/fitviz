@@ -67,7 +67,6 @@ def load_activity_files():
 
     for f in unsaved_files:
         activity = activity_from_file(os.path.join(config["activity_dir"], f))
-        activity.file_name = f
 
         session.add(activity)
         session.commit()
