@@ -1,6 +1,6 @@
 .vscode
 .pytest_cache
-scratch.py
+scratch*.py
 *.pyc
 config.ini
 future.txt
