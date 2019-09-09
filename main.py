@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from bokeh.layouts import Row
+from bokeh.layouts import layout
 from bokeh.models import ColumnDataSource, NumeralTickFormatter
 from bokeh.models.widgets import Select
 from bokeh.plotting import curdoc, figure
@@ -51,9 +51,13 @@ power_dist_src = ColumnDataSource(
     data={"bottom": [], "time_in_bin": [], "l_edge": [], "r_edge": []}
 )
 
+hr_dist_src = ColumnDataSource(
+    data={"bottom": [], "time_in_bin": [], "l_edge": [], "r_edge": []}
+)
+
 
 # Setup empty charts and glyphs
-data_stream_fig = figure(title="Data Stream", plot_height=400, plot_width=800)
+data_stream_fig = figure(title="Data Stream", plot_height=250, plot_width=800)
 data_stream_fig.xaxis.formatter = NumeralTickFormatter(format="00:00:00")
 data_stream_fig.line(
     x="cumulative_time", y="power", line_width=1, source=data_stream_src
@@ -66,6 +70,15 @@ power_dist_fig.quad(
     left="left_edge",
     right="right_edge",
     source=power_dist_src,
+)
+
+hr_dist_fig = figure(title="Heart Rate Distribution", plot_height=250, plot_width=400)
+hr_dist_fig.quad(
+    bottom="bottom",
+    top="time_in_bin",
+    left="left_edge",
+    right="right_edge",
+    source=hr_dist_src,
 )
 
 
@@ -120,6 +133,7 @@ def update(attr, old, new):
     df = actvitiy_df(int(new))
     data_stream_src.data = data_stream_data(df)
     power_dist_src.data = distribution_data(df, "power")
+    hr_dist_src.data = distribution_data(df, "heart_rate")
 
 
 # Register callback on widget
@@ -130,5 +144,15 @@ activity_select.on_change("value", update)
 update(None, None, max(act[0] for act in activity_select_vals()))
 
 
+# Layout
+l = layout(
+    [
+        [
+            activity_select, [data_stream_fig, [power_dist_fig, hr_dist_fig]]
+        ],
+    ]
+)
+
+
 # Add to current document for rendering
-curdoc().add_root(Row(activity_select, data_stream_fig, power_dist_fig))
+curdoc().add_root(l)
