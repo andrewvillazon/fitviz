@@ -61,8 +61,27 @@ hr_dist_src = ColumnDataSource(
 data_stream_fig = figure(title="Data Stream", plot_height=250, plot_width=800)
 data_stream_fig.xaxis.formatter = NumeralTickFormatter(format="00:00:00")
 data_stream_fig.line(
-    x="cumulative_time", y="power", line_width=1, source=data_stream_src, line_color=Set3[7][4]
+    x="cumulative_time",
+    y="altitude",
+    line_width=1,
+    source=data_stream_src,
+    line_color=Set3[9][8],
 )
+data_stream_fig.line(
+    x="cumulative_time",
+    y="power",
+    line_width=1,
+    source=data_stream_src,
+    line_color=Set3[9][4],
+)
+data_stream_fig.line(
+    x="cumulative_time",
+    y="heart_rate",
+    line_width=1,
+    source=data_stream_src,
+    line_color=Set3[9][3],
+)
+
 
 power_dist_fig = figure(title="Power Distribution", plot_height=250, plot_width=400)
 power_dist_fig.quad(
@@ -71,7 +90,7 @@ power_dist_fig.quad(
     left="left_edge",
     right="right_edge",
     source=power_dist_src,
-    color=Set3[7][4]
+    color=Set3[9][4],
 )
 
 hr_dist_fig = figure(title="Heart Rate Distribution", plot_height=250, plot_width=400)
@@ -81,7 +100,7 @@ hr_dist_fig.quad(
     left="left_edge",
     right="right_edge",
     source=hr_dist_src,
-    color=Set3[7][3]
+    color=Set3[9][3],
 )
 
 
@@ -148,13 +167,7 @@ update(None, None, max(act[0] for act in activity_select_vals()))
 
 
 # Layout
-l = layout(
-    [
-        [
-            activity_select, [data_stream_fig, [power_dist_fig, hr_dist_fig]]
-        ],
-    ]
-)
+l = layout([[activity_select, [data_stream_fig, [power_dist_fig, hr_dist_fig]]]])
 
 
 # Add to current document for rendering
