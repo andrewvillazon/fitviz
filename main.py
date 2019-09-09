@@ -3,6 +3,7 @@ import numpy as np
 from bokeh.layouts import layout
 from bokeh.models import ColumnDataSource, NumeralTickFormatter
 from bokeh.models.widgets import Select
+from bokeh.palettes import Set3
 from bokeh.plotting import curdoc, figure
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -60,7 +61,7 @@ hr_dist_src = ColumnDataSource(
 data_stream_fig = figure(title="Data Stream", plot_height=250, plot_width=800)
 data_stream_fig.xaxis.formatter = NumeralTickFormatter(format="00:00:00")
 data_stream_fig.line(
-    x="cumulative_time", y="power", line_width=1, source=data_stream_src
+    x="cumulative_time", y="power", line_width=1, source=data_stream_src, line_color=Set3[7][4]
 )
 
 power_dist_fig = figure(title="Power Distribution", plot_height=250, plot_width=400)
@@ -70,6 +71,7 @@ power_dist_fig.quad(
     left="left_edge",
     right="right_edge",
     source=power_dist_src,
+    color=Set3[7][4]
 )
 
 hr_dist_fig = figure(title="Heart Rate Distribution", plot_height=250, plot_width=400)
@@ -79,6 +81,7 @@ hr_dist_fig.quad(
     left="left_edge",
     right="right_edge",
     source=hr_dist_src,
+    color=Set3[7][3]
 )
 
 
