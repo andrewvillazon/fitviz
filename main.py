@@ -56,6 +56,8 @@ hr_dist_src = ColumnDataSource(
     data={"bottom": [], "time_in_bin": [], "l_edge": [], "r_edge": []}
 )
 
+pdc_src = ColumnDataSource(data={"durations": [], "mmp": []})
+
 
 # Setup empty charts and glyphs
 data_stream_fig = figure(title="Data Stream", plot_height=250, plot_width=800)
@@ -82,7 +84,6 @@ data_stream_fig.line(
     line_color=Set3[9][3],
 )
 
-
 power_dist_fig = figure(title="Power Distribution", plot_height=250, plot_width=400)
 power_dist_fig.quad(
     bottom="bottom",
@@ -102,6 +103,9 @@ hr_dist_fig.quad(
     source=hr_dist_src,
     color=Set3[9][3],
 )
+
+pdc_fig = figure(title="Power Duration Curve", plot_height=250, plot_width=800, x_axis_type="log")
+pdc_fig.circle(x="durations", y="mmp", source=pdc_src, color=Set3[9][4])
 
 
 # Prepare chart data
@@ -150,12 +154,35 @@ def distribution_data(activity_df, measure):
     }
 
 
+# Power duration curve
+def running_mean(x, N):
+    cumsum = np.cumsum(np.insert(x, 0, 0)) 
+    return (cumsum[N:] - cumsum[:-N]) / float(N)
+
+
+def max_mean_power(power, duration):
+    if duration == 1:
+        return max(power)
+
+    return max(running_mean(power, duration))
+
+
+def pdc_data(df):
+    power = df['power'].dropna().values
+
+    durations = list(set(np.geomspace(start=1, stop=len(power), num=100, dtype=int).tolist()))
+    mmp = [max_mean_power(power, duration) for duration in durations]
+
+    return {"durations": durations, "mmp": mmp}
+
+
 # Widget callback that will populate charts
 def update(attr, old, new):
     df = actvitiy_df(int(new))
     data_stream_src.data = data_stream_data(df)
     power_dist_src.data = distribution_data(df, "power")
     hr_dist_src.data = distribution_data(df, "heart_rate")
+    pdc_src.data = pdc_data(df)
 
 
 # Register callback on widget
@@ -167,7 +194,15 @@ update(None, None, max(act[0] for act in activity_select_vals()))
 
 
 # Layout
-l = layout([[activity_select, [data_stream_fig, [power_dist_fig, hr_dist_fig]]]])
+l = layout(
+    [
+        [activity_select, 
+        [data_stream_fig, 
+            [power_dist_fig, hr_dist_fig],
+        pdc_fig
+        ]]
+    ]
+    )
 
 
 # Add to current document for rendering
