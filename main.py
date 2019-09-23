@@ -1,15 +1,16 @@
-import pandas as pd
+import os
+
 import numpy as np
+import pandas as pd
 from bokeh.layouts import layout
 from bokeh.models import ColumnDataSource, NumeralTickFormatter
-from bokeh.models.widgets import Select
+from bokeh.models.widgets import Div, Select
 from bokeh.palettes import Set3
 from bokeh.plotting import curdoc, figure
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from parcours.config import config
 from parcours.models import Activity, Record
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 # Connect to data
@@ -34,10 +35,11 @@ def activity_select_vals():
 
 activity_select = Select(title="Activity", options=activity_select_vals())
 
-# Add summary Text. Use the Div Widget to add a summary table. Use placeholder html to do this
-
 
 # Setup empty chart sources
+with open(os.path.join('resources','templates','ride_summary.html')) as in_file:
+    ride_summary_template = in_file.read()
+
 data_stream_src = ColumnDataSource(
     data={
         "cumulative_time": [],
@@ -60,6 +62,8 @@ pdc_src = ColumnDataSource(data={"durations": [], "mmp": []})
 
 
 # Setup empty charts and glyphs
+ride_summary = Div(width=800, height=250)
+
 data_stream_fig = figure(title="Data Stream", plot_height=250, plot_width=800)
 data_stream_fig.xaxis.formatter = NumeralTickFormatter(format="00:00:00")
 data_stream_fig.line(
@@ -109,6 +113,15 @@ pdc_fig.circle(x="durations", y="mmp", source=pdc_src, color=Set3[9][4])
 
 
 # Prepare chart data
+def ride_summary_text(df):
+    return ride_summary_template.format(
+        distance=df["distance"].sum(),
+        duration=df["duration"].sum(),
+        avg_speed=df["speed"].mean(),
+        avg_hr=df["heart_rate"].mean(),
+        avg_pwr=df["power"].mean()
+    )
+
 def actvitiy_df(activity_id):
     query = session.query(Record).filter(Record.activity_id == activity_id)
     df = pd.read_sql(query.statement, query.session.bind, index_col="record_dtm")
@@ -197,7 +210,8 @@ update(None, None, max(act[0] for act in activity_select_vals()))
 l = layout(
     [
         [activity_select, 
-        [data_stream_fig, 
+        [ride_summary
+        ,data_stream_fig, 
             [power_dist_fig, hr_dist_fig],
         pdc_fig
         ]]
