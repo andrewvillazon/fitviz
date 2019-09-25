@@ -152,6 +152,9 @@ def distribution_data(activity_df, measure):
     series = activity_df[measure].fillna(0.0).astype(int)
     series = series[series > 0]
 
+    if series.empty:
+        return {"bottom": [], "time_in_bin": [], "left_edge": [], "right_edge": []}
+
     bin_size = 5
     top_of_bin_range = round_up(max(series), bin_size)
 
@@ -182,6 +185,9 @@ def max_mean_power(power, duration):
 
 def pdc_data(df):
     power = df['power'].dropna().values
+
+    if power.size == 0:
+        return {"durations": [], "mmp": []}
 
     durations = list(set(np.geomspace(start=1, stop=len(power), num=100, dtype=int).tolist()))
     mmp = [max_mean_power(power, duration) for duration in durations]
