@@ -1,4 +1,5 @@
 import os
+import time
 
 import numpy as np
 import pandas as pd
@@ -62,7 +63,7 @@ pdc_src = ColumnDataSource(data={"durations": [], "mmp": []})
 
 
 # Setup empty charts and glyphs
-ride_summary = Div(width=800, height=250)
+ride_summary = Div(width=800, height=190)
 
 data_stream_fig = figure(title="Data Stream", plot_height=250, plot_width=800)
 data_stream_fig.xaxis.formatter = NumeralTickFormatter(format="00:00:00")
@@ -114,12 +115,14 @@ pdc_fig.circle(x="durations", y="mmp", source=pdc_src, color=Set3[9][4])
 
 # Prepare chart data
 def ride_summary_text(df):
+    df = df.fillna(0)
+
     return ride_summary_template.format(
-        distance=df["distance"].sum(),
-        duration=df["duration"].sum(),
-        avg_speed=df["speed"].mean(),
+        distance=df["distance"].max(),
+        duration=time.strftime('%H:%M:%S', time.gmtime(len(df.index))),
+        avg_speed=(df["speed"].mean()) * 3.6,
         avg_hr=df["heart_rate"].mean(),
-        avg_pwr=df["power"].mean()
+        avg_power=df["power"].mean()
     )
 
 def actvitiy_df(activity_id):
@@ -202,6 +205,7 @@ def update(attr, old, new):
     power_dist_src.data = distribution_data(df, "power")
     hr_dist_src.data = distribution_data(df, "heart_rate")
     pdc_src.data = pdc_data(df)
+    ride_summary.text = ride_summary_text(df)
 
 
 # Register callback on widget
