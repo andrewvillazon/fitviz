@@ -37,8 +37,14 @@ def activity_select_vals():
 activity_select = Select(title="Activity", options=activity_select_vals())
 
 
+with open(os.path.join('resources', 'templates', 'dash_title.html')) as in_file:
+    dash_title = in_file.read()
+
+title = Div(text=dash_title, sizing_mode="stretch_width")
+
+
 # Setup empty chart sources
-with open(os.path.join('resources','templates','ride_summary.html')) as in_file:
+with open(os.path.join('resources', 'templates', 'ride_summary.html')) as in_file:
     ride_summary_template = in_file.read()
 
 data_stream_src = ColumnDataSource(
@@ -63,7 +69,7 @@ pdc_src = ColumnDataSource(data={"durations": [], "mmp": []})
 
 
 # Setup empty charts and glyphs
-ride_summary = Div(width=800, height=190)
+ride_summary = Div(sizing_mode="stretch_width")
 
 data_stream_fig = figure(title="Data Stream", plot_height=250, plot_width=800)
 data_stream_fig.xaxis.formatter = NumeralTickFormatter(format="00:00:00")
@@ -219,12 +225,13 @@ update(None, None, max(act[0] for act in activity_select_vals()))
 # Layout
 l = layout(
     [
-        [activity_select, 
-        [ride_summary
-        ,data_stream_fig, 
+        [title],
+        [[activity_select, ride_summary], 
+        [data_stream_fig, 
             [power_dist_fig, hr_dist_fig],
         pdc_fig
-        ]]
+        ]
+        ]
     ]
     )
 
