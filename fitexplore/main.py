@@ -14,6 +14,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
+TEMPLATES_PATH = os.path.join(os.path.dirname(__file__), 'resources', 'templates')
+
+
 # Connect to data
 engine = create_engine(f"sqlite:///{config['db_uri']}", echo=False)
 Session = sessionmaker(bind=engine)
@@ -37,14 +40,14 @@ def activity_select_vals():
 activity_select = Select(title="Activity", options=activity_select_vals())
 
 
-with open(os.path.join('resources', 'templates', 'dash_title.html')) as in_file:
+with open(os.path.join(TEMPLATES_PATH, 'dash_title.html')) as in_file:
     dash_title = in_file.read()
 
 title = Div(text=dash_title, sizing_mode="stretch_width")
 
 
 # Setup empty chart sources
-with open(os.path.join('resources', 'templates', 'ride_summary.html')) as in_file:
+with open(os.path.join(TEMPLATES_PATH, 'ride_summary.html')) as in_file:
     ride_summary_template = in_file.read()
 
 data_stream_src = ColumnDataSource(
