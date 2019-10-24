@@ -10,6 +10,7 @@ import os
 from configobj import ConfigObj
 
 
-CONFIG_PATH = os.getenv("PARCOURS_CONF")
+RESOURCES_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'resources')
+CONFIG_PATH = os.path.join(RESOURCES_PATH, "configuration", "config.ini")
 
 config = ConfigObj(CONFIG_PATH)
