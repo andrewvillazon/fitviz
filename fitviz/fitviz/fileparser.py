@@ -8,6 +8,7 @@ This module contains methods for mapping (mappers) fit messages to models,
 prefixed by _map, and methods for transforming data into user-friendly units.
 
 Primary interface is fileparser.activity_from_file(file_path)
+
 """
 
 import os
