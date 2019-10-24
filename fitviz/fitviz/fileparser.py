@@ -1,8 +1,15 @@
-"""Module providing functionality to parse a fit file into an
-activity domain object.
+""".fit file parsing module.
 
-Main interface is activity_from_file()
+Module provides functionality to parse a .fit file and map it to a sqlalchemy
+model object so it can be serialized to the fitviz database. Parsing is
+provided by the fitparse library.
+
+This module contains methods for mapping (mappers) fit messages to models,
+prefixed by _map, and methods for transforming data into user-friendly units.
+
+Primary interface is fileparser.activity_from_file(file_path)
 """
+
 import os
 
 import pyproj
