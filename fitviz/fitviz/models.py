@@ -1,3 +1,13 @@
+"""Fitviz sqlalchemy models
+
+Classes defined in this module are used to populate the fitviz database
+through the sqlalchemy ORM.
+
+These classes correspond to fit message types of the Activity Fit File
+type outlined in the fit sdk.
+
+"""
+
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -7,6 +17,12 @@ Base = declarative_base()
 
 
 class Activity(Base):
+    """Represents an activity such as a ride. Provides a container for sensor
+    and ride data. Loosely corresponds to the activity message of the Activity
+    File fit file type.
+    standard.
+    """
+
     __tablename__ = "activity"
 
     id = Column(Integer, primary_key=True)
@@ -19,6 +35,11 @@ class Activity(Base):
 
 
 class Record(Base):
+    """Represents data sampled from the device during activity. Includes
+    sensor data such as speed, heart rate, power, etc. Corresponds to the
+    record message of the Activity File fit file type.
+    """
+
     __tablename__ = "record"
 
     id = Column(Integer, primary_key=True)
@@ -41,6 +62,10 @@ class Record(Base):
 
 
 class Lap(Base):
+    """Represents a lap i.e. where the device user has pressed the 'lap'
+    button to signal the start/finish of a lap. Corresponds to the lap message
+    of the Activity File fit file type.
+    """
     __tablename__ = "lap"
 
     id = Column(Integer, primary_key=True)
