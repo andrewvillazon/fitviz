@@ -8,8 +8,8 @@ from bokeh.models import ColumnDataSource, NumeralTickFormatter
 from bokeh.models.widgets import Div, Select
 from bokeh.palettes import Set3
 from bokeh.plotting import curdoc, figure
-from parcours.config import config
-from parcours.models import Activity, Record
+from fitviz.config import config
+from fitviz.models import Activity, Record
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
