@@ -17,7 +17,13 @@ from .fileparser import activity_from_file
 from .models import Base, Activity
 
 
-engine = create_engine(f"sqlite:///{config['db_uri']}", echo=True)
+default_db_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'resources', 'database', 'activity.db')
+def_activities_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'resources', 'activities')
+
+db_path = config['db_uri'] if config['db_uri'] else default_db_path
+activities_path = config['activity_dir'] if config['activity_dir'] else def_activities_path
+
+engine = create_engine(f"sqlite:///{db_path}", echo=True)
 Session = sessionmaker(bind=engine)
 
 
@@ -27,7 +33,7 @@ def activities_in_dir():
     """
     file_names = []
 
-    for file_name in os.listdir(config["activity_dir"]):
+    for file_name in os.listdir(activities_path):
         if file_name.endswith(".fit"):
             file_names.append(file_name)
 
@@ -66,7 +72,7 @@ def load_activity_files():
     session = Session()
 
     for f in unsaved_files:
-        activity = activity_from_file(os.path.join(config["activity_dir"], f))
+        activity = activity_from_file(os.path.join(activities_path, f))
 
         session.add(activity)
         session.commit()

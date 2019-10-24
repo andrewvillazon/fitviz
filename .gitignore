@@ -2,6 +2,6 @@
 .pytest_cache
 scratch*.py
 *.pyc
-config.ini
 future.txt
 *.db
+*.fit
