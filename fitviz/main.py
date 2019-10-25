@@ -1,3 +1,15 @@
+"""FitViz main module
+
+Contains code which generates the visualisations used in FitViz.
+
+main.py is a required file by Bokeh to run as an application.
+
+Todo:
+    * Possbily consider moving charts and their components into
+    own package to make main.py easier to maintain.
+
+"""
+
 import os
 import time
 

@@ -1,9 +1,8 @@
-"""
-server_lifecycle
-~~~~~~~~~~~~~~~
+"""Server Lifecycle Hooks module.
 
 Bokeh Server Lifecycle Hooks. Code here is designed to be exectuted at
 certain times in the server session or lifetime.
+
 """
 from fitviz import database
 
