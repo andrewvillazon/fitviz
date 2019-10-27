@@ -7,7 +7,7 @@ FitViz is a tool written in python for exploring and visualising .fit files. Cur
 To use FitViz clone (or download) the repo with the command below:
 
 ```bash
-git clone 
+git clone https://github.com/andrewvillazon/fitviz.git
 ```
 Install the required dependencies from `requirements.txt`:
 
